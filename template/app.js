@@ -13,6 +13,8 @@
   };
 
   const mainPhone = S.phones[0];
+  const pricesTitle = S.pricesTitle || "Цены";
+  const hasAnyPrice = S.prices.some((g) => g.items.some((it) => it[1]));
   const mapSrc = "https://yandex.ru/map-widget/v1/?text=" + encodeURIComponent(S.mapQuery) + "&z=16";
   const routeHref = "https://yandex.ru/maps/?rtext=~" + encodeURIComponent(S.mapQuery);
 
@@ -21,7 +23,7 @@
       <div class="container nav-inner">
         <a class="brand" href="#top">${esc(S.name)}</a>
         <nav class="nav-links" aria-label="Разделы">
-          <a href="#prices">Цены</a>
+          <a href="#prices">${esc(pricesTitle)}</a>
           <a href="#reviews">Отзывы</a>
           <a href="#contacts">Контакты</a>
         </nav>
@@ -43,7 +45,7 @@
             <li><span class="fact">${icons.clock}${esc(S.hoursShort)}</span></li>
             <li><a class="fact" href="#contacts">${icons.pin}${esc(S.address.replace(/^Томск,\s*/, ""))}</a></li>
           </ul>
-          ${S.heroPhoto ? `<img class="hero-photo" src="${esc(S.heroPhoto.src)}" alt="${esc(S.heroPhoto.alt)}" width="1280" height="960" fetchpriority="high">` : ""}
+          ${S.heroPhoto ? `<img class="hero-photo" src="${esc(S.heroPhoto.src)}" alt="${esc(S.heroPhoto.alt)}" width="1280" height="960" fetchpriority="high"${S.heroPhoto.position ? ` style="object-position:${esc(S.heroPhoto.position)}"` : ""}>` : ""}
         </div>
         <div class="request" id="request">
           <form class="request-inner" novalidate>
@@ -78,6 +80,7 @@
   const tabs = S.prices.map((g, i) => `<button type="button" class="tab" role="tab" id="tab-${i}" aria-controls="panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${esc(g.group)}</button>`).join("");
 
   const priceRows = (g) => g.items.map(([n, v]) => {
+    if (!v) return `<li class="price-row"><span class="price-name">${esc(n)}</span></li>`;
     const free = /бесплатно/i.test(v);
     return `<li class="price-row"><span class="price-name">${esc(n)}</span><span class="price-value${free ? " is-free" : ""}">${esc(v)}</span></li>`;
   }).join("");
@@ -87,7 +90,7 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <h2>Цены</h2>
+            <h2>${esc(pricesTitle)}</h2>
             <p class="section-sub">${esc(S.pricesNote)}</p>
           </div>
         </div>
@@ -96,7 +99,7 @@
           <ul class="price-list">${priceRows(S.prices[0])}</ul>
         </div>
         <div class="price-cta">
-          <p>Не нашли свою поломку в списке? Опишите её в заявке, и мастер скажет, сколько это будет стоить.</p>
+          <p>${hasAnyPrice ? "Не нашли свою поломку в списке? Опишите её в заявке, и мастер скажет, сколько это будет стоить." : "Опишите проблему в заявке, и мастер перезвонит, чтобы назвать цену и время."}</p>
           <a class="btn btn-primary" href="#request">Оставить заявку</a>
         </div>
       </div>
@@ -107,8 +110,8 @@
       <div class="container">
         <h2>${esc(S.galleryTitle)}</h2>
         <p class="section-sub">${esc(S.gallerySub)}</p>
-        <div class="gallery">
-          ${S.gallery.map((p) => `<img src="${esc(p.src)}" alt="${esc(p.alt)}" width="1050" height="1400" loading="lazy">`).join("")}
+        <div class="gallery" style="--cols:${S.gallery.length}${S.galleryAspect ? ";--aspect:" + esc(S.galleryAspect) : ""}">
+          ${S.gallery.map((p) => `<img src="${esc(p.src)}" alt="${esc(p.alt)}" width="1050" height="1400" loading="lazy"${p.position ? ` style="object-position:${esc(p.position)}"` : ""}>`).join("")}
         </div>
       </div>
     </section>` : "";
@@ -117,7 +120,7 @@
     <section class="section band on-dark" id="reviews">
       <div class="container">
         <h2>Что пишут клиенты</h2>
-        <p class="section-sub">${esc(S.rating.value)} из 5 по ${esc(S.rating.count)} в ${esc(S.rating.source)}. ${esc(S.badge)}.</p>
+        <p class="section-sub">${esc(S.rating.value)} из 5 по ${esc(S.rating.count)} в ${esc(S.rating.source)}.${S.badge ? " " + esc(S.badge) + "." : ""}</p>
         <div class="reviews">
           ${S.reviews.map((r) => `<figure class="review"><blockquote>${esc(r.text)}</blockquote><figcaption>${esc(r.author)}, отзыв в ${esc(S.rating.source)}</figcaption></figure>`).join("")}
         </div>
@@ -134,15 +137,17 @@
           <div class="contact-card">
             <div class="contact-block">
               <h3>${esc(S.address)}</h3>
-              <p class="contact-muted">${esc(S.addressNote)}</p>
+              ${S.addressNote ? `<p class="contact-muted">${esc(S.addressNote)}</p>` : ""}
+              ${(S.branches || []).map((b) => `<p class="contact-muted" style="margin-top:6px">${esc(b)}</p>`).join("")}
             </div>
             <div class="contact-block">
               ${S.phones.map((p) => `<a class="phone-link" href="tel:${esc(p.tel)}">${esc(p.label)}</a>`).join("")}
-              <p class="contact-muted" style="margin-top:4px">${esc(S.email)}</p>
+              ${S.email ? `<p class="contact-muted" style="margin-top:4px">${esc(S.email)}</p>` : ""}
+              ${S.messengers && S.messengers.length ? `<div class="messengers">${S.messengers.map((m) => `<a class="fact" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.label)}</a>`).join("")}</div>` : ""}
             </div>
             <div class="contact-block">
               <table class="hours"><tbody>${S.hours.map(([d, t]) => `<tr><td>${esc(d)}</td><td>${esc(t)}</td></tr>`).join("")}</tbody></table>
-              <p class="contact-muted" style="margin-top:8px">Оплата: ${esc(S.payment.toLowerCase())}</p>
+              ${S.payment ? `<p class="contact-muted" style="margin-top:8px">Оплата: ${esc(S.payment.charAt(0).toLowerCase() + S.payment.slice(1))}</p>` : ""}
             </div>
             <div class="contact-actions">
               <a class="btn btn-primary" href="tel:${esc(mainPhone.tel)}">${icons.phone}Позвонить</a>

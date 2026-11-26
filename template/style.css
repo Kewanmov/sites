@@ -198,7 +198,7 @@ a.fact:hover { background: var(--pressed); }
 
 .gallery {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
   gap: 16px;
   margin-top: 32px;
 }
@@ -207,7 +207,7 @@ a.fact:hover { background: var(--pressed); }
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: var(--aspect, 3 / 4);
   border-radius: var(--r-xl);
   object-fit: cover;
   background: var(--canvas-soft);
@@ -590,6 +590,16 @@ a.fact:hover { background: var(--pressed); }
 }
 
 .phone-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.messengers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.messengers .fact { background: var(--canvas); }
+.messengers .fact:hover { background: var(--pressed); }
 
 .contact-actions {
   display: flex;
