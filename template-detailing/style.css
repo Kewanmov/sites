@@ -307,8 +307,48 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .btn-big { min-height: 58px; margin-top: 24px; font-size: 17px; }
 .booking .group { margin-top: 22px; }
 
+.hero-photo { min-height: min(92svh, 820px); background: var(--night); }
+.hero-photo::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(var(--night-rgb) / .7) 0%, rgb(var(--night-rgb) / .25) 34%, rgb(var(--night-rgb) / .55) 60%, rgb(var(--night-rgb) / .97) 100%); }
+.hero-photo .hero-tone { position: absolute; inset: 0; z-index: 1; background: var(--tint); mix-blend-mode: color; opacity: .75; }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(var(--hero-dim, .8)); transform: scale(1.08); transition: transform 2.4s var(--ease); }
+.is-ready .hero-img { transform: scale(1); }
+.hero-photo .hero-name { font-size: clamp(64px, 26vw, 220px); line-height: .9; text-shadow: none; }
+.hero-photo .hero-kind { color: var(--glow); }
+.waves { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; width: 100%; height: 70px; }
+.waves path { fill: none; stroke: var(--glow); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.waves .w2 { opacity: .4; }
+.is-ready .waves .w1 { animation: swell 7s ease-in-out infinite alternate; }
+.is-ready .waves .w2 { animation: swell 9s ease-in-out infinite alternate-reverse; }
+@keyframes swell { from { transform: translateX(-20px); } to { transform: translateX(20px); } }
+
+.shots { display: grid; gap: 12px; margin-top: 28px; }
+.shot { position: relative; display: flex; align-items: flex-end; min-height: 260px; border-radius: 22px; overflow: hidden; isolation: isolate; background: var(--night); color: var(--white); }
+.shot img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.shot::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 25%, rgb(var(--night-rgb) / .9)); }
+.shot:hover img { transform: scale(1.04); }
+.shot.is-plain { background: radial-gradient(120% 90% at 100% 0%, rgb(var(--accent-rgb) / .45), transparent 60%), linear-gradient(160deg, var(--tint), var(--night)); }
+.shot.is-plain::before { display: none; }
+.shot-body { display: grid; gap: 4px; padding: 20px; }
+.shot-price { justify-self: start; padding: 6px 10px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
+.shot-title { margin-top: 6px; font: 700 22px/1.15 var(--display); }
+.shot-text { color: rgba(255,255,255,.75); font-size: 15px; }
+
+.chat { display: grid; gap: 14px; margin-top: 32px; max-width: 760px; }
+.bubble { justify-self: start; max-width: 88%; }
+.bubble.is-right { justify-self: end; }
+.bubble figcaption { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 14px; font-weight: 600; color: var(--body); }
+.bubble.is-right figcaption { justify-content: flex-end; }
+.ava { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--night); color: var(--glow); font-size: 13px; }
+.bubble blockquote { padding: 14px 18px; border-radius: 20px 20px 20px 6px; background: var(--tile); font-size: 16px; line-height: 1.5; }
+.bubble.is-right blockquote { border-radius: 20px 20px 6px 20px; background: var(--night); color: var(--white); }
+.bubble { opacity: 0; transform: translateY(12px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.bubble.is-seen { opacity: 1; transform: none; }
+
 @media (min-width: 760px) {
   :root { --pad: 40px; }
+  .shots { grid-template-columns: repeat(2, 1fr); }
+  .shot { min-height: 340px; }
+  .hero-photo .hero-name { font-size: clamp(120px, 18vw, 240px); }
   .nav-call span { display: inline; }
   .nav-links { display: flex; gap: 26px; font-weight: 500; font-size: 15px; }
   .nav-links a { opacity: .8; transition: opacity .2s; }
@@ -349,6 +389,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .neon-word, .neon-tri path, .hero-neon .hero-kind, .hero-neon .hero-lead, .hero-neon .hero-actions, .hero-neon .hero-badge { opacity: 1 !important; transform: none !important; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .lines path { stroke-dashoffset: 0; }
-  .slide img { transform: none !important; }
+  .slide img, .hero-img { transform: none !important; }
+  .bubble { opacity: 1; transform: none; }
   .hero-kind, .hero-name, .hero-lead, .hero-actions { opacity: 1; transform: none; }
 }

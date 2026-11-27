@@ -111,7 +111,31 @@
         <path class="t3" d="M150 40 L172 6 L194 40 Z"/>
       </g>
     </svg>`;
-  const hero = S.hero === "neon" ? `
+  const wave = (y, amp, len) => {
+    let d = "M-40 " + y;
+    for (let x = -40; x < 440; x += len) d += ` q${len / 4} ${-amp} ${len / 2} 0 t${len / 2} 0`;
+    return d;
+  };
+  const heroPhoto = S.hero === "photo" && S.heroPhoto ? `
+    <section class="hero hero-photo" id="top">
+      <img class="hero-img" src="${esc(S.heroPhoto.src)}" alt="${esc(S.heroPhoto.alt)}" width="1600" height="900" fetchpriority="high"${S.heroPhoto.position ? ` style="object-position:${esc(S.heroPhoto.position)}"` : ""}>
+      <span class="hero-tone" aria-hidden="true"></span>
+      <svg class="waves" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true">
+        <path class="w1" d="${wave(30, 14, 80)}"/>
+        <path class="w2" d="${wave(38, 10, 120)}"/>
+      </svg>
+      <div class="hero-body">
+        ${S.badge ? `<p class="hero-badge">${icons.star}${esc(S.badge)}</p>` : ""}
+        <p class="hero-kind">${esc(S.kind)} в Томске</p>
+        <h1 class="hero-name">${esc(S.name)}</h1>
+        <p class="hero-lead">${esc(S.lead)}</p>
+        <div class="hero-actions">
+          <a class="btn btn-accent" href="#booking">Записаться</a>
+          <a class="btn btn-glass" href="tel:${esc(mainPhone.tel)}">${icons.phone}Позвонить</a>
+        </div>
+      </div>
+    </section>` : "";
+  const hero = heroPhoto || (S.hero === "neon" ? `
     <section class="hero hero-neon" id="top">
       ${neonTri}
       <div class="hero-body">
@@ -137,7 +161,7 @@
           <a class="btn btn-glass" href="tel:${esc(mainPhone.tel)}">${icons.phone}Позвонить</a>
         </div>
       </div>
-    </section>`;
+    </section>`);
 
   const facts = `
     <div class="facts">
@@ -159,7 +183,18 @@
     <section class="section" id="wash">
       <h2 class="title">${esc(S.phasesTitle || "Как моем")}</h2>
       <p class="sub">${esc(S.phasesNote || "Основные программы и цены.")}</p>
-      ${S.phasesStyle === "tiers" ? `
+      ${S.phasesStyle === "photos" ? `
+      <div class="shots">
+        ${S.phases.map((p) => `
+          <a class="shot${p.photo ? "" : " is-plain"}" href="#booking" data-pick="${esc(p.pick || p.title)}">
+            ${p.photo ? `<img src="${esc(p.photo.src)}" alt="${esc(p.photo.alt)}" width="1600" height="900" loading="lazy"${p.photo.position ? ` style="object-position:${esc(p.photo.position)}"` : ""}>` : ""}
+            <span class="shot-body">
+              <span class="shot-price">${esc(p.price)}</span>
+              <span class="shot-title">${esc(p.title)}</span>
+              ${p.text ? `<span class="shot-text">${esc(p.text)}</span>` : ""}
+            </span>
+          </a>`).join("")}
+      </div>` : S.phasesStyle === "tiers" ? `
       <div class="tiers">
         ${S.phases.map((p) => `
           <article class="tier${p.combo ? " is-top" : ""}">
@@ -247,7 +282,8 @@
         <span class="score-num">${esc(S.rating.value)}</span>
         <div><span class="stars stars-lg">${icons.star.repeat(5)}</span><p class="sub">${esc(S.rating.count)} в ${esc(S.rating.source)}</p></div>
       </div>
-      ${S.reviewsStyle === "stickers" ? `
+      ${S.reviewsStyle === "chat" ? `
+      <div class="chat">${S.reviews.map((r, i) => `<figure class="bubble${i % 2 ? " is-right" : ""}"><figcaption><span class="ava" aria-hidden="true">${esc(r.author.trim().charAt(0))}</span>${esc(r.author)}</figcaption><blockquote>${esc(r.text)}</blockquote></figure>`).join("")}</div>` : S.reviewsStyle === "stickers" ? `
       <div class="stickers">${S.reviews.map((r, i) => `<figure class="sticker" style="--r:${[-2, 1.5, -1, 2, -1.5][i % 5]}deg"><blockquote>${esc(r.text)}</blockquote><figcaption>${esc(r.author)}</figcaption></figure>`).join("")}</div>` : `
       <div class="rail rail-light">${S.reviews.map((r) => `<figure class="review"><blockquote>${esc(r.text)}</blockquote><figcaption>${esc(r.author)}</figcaption></figure>`).join("")}</div>`}
       <a class="link" href="${esc(S.rating.url)}" target="_blank" rel="noopener">Все отзывы в ${esc(S.rating.source)}</a>
@@ -402,6 +438,14 @@
       dockEl.classList.toggle("is-away", seen.size > 0);
     }, { threshold: 0.2 });
     ["#booking", "#contacts"].forEach((s) => io.observe(app.querySelector(s)));
+  }
+
+  const bubbles = [...app.querySelectorAll(".bubble")];
+  if (bubbles.length) {
+    if ("IntersectionObserver" in window) {
+      const bo = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-seen"); bo.unobserve(e.target); } }), { threshold: 0.3 });
+      bubbles.forEach((b) => bo.observe(b));
+    } else bubbles.forEach((b) => b.classList.add("is-seen"));
   }
 
   const tabEls = [...app.querySelectorAll(".tab")];
